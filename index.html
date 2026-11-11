@@ -1,0 +1,96 @@
+<!--
+  index.html — THE STRUCTURE OF THE PAGE
+  This file decides WHAT is on the page (title, button, stickers, video, canvas).
+  It does not decide how things look (that's style.css)
+  or how they behave (that's script.js).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Tells the browser to use UTF-8 text so emojis and symbols show correctly -->
+  <meta charset="UTF-8" />
+
+  <!-- Makes the page scale properly on different screen sizes -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- The text shown on the browser tab -->
+  <title>Air Canvas ✨</title>
+
+  <!-- Loads two Google Fonts:
+       - "Fraunces": a soft, curly serif for the big title (pretty + whimsical)
+       - "Nunito": a round, friendly font for everything else (clean + readable)
+       WHY two fonts: a fancy font for headings and a simple one for small text
+       is a classic design trick: it looks special without being hard to read. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Connects our stylesheet so the page uses our colours and layout -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- DECORATION LAYER: soft colour blobs + floating stickers behind everything.
+       aria-hidden="true" tells screen readers to skip this part,
+       because it's only decoration and has no information in it. -->
+  <div class="decorations" aria-hidden="true">
+    <!-- Big blurry colour blobs that give the background a dreamy, painted feel -->
+    <span class="blob blob-pink"></span>
+    <span class="blob blob-lemon"></span>
+    <span class="blob blob-pear"></span>
+
+    <!-- Your stickers, floating around the edges of the page.
+         alt="" (empty) because they're decoration. Each has its own class
+         so style.css can place it in a different spot. -->
+    <img class="floating-sticker sticker-flower-cat" src="assets/stickers/flower-cat.png" alt="" />
+    <img class="floating-sticker sticker-goldfish"   src="assets/stickers/goldfish.png"   alt="" />
+    <img class="floating-sticker sticker-pansy"      src="assets/stickers/pansy.png"      alt="" />
+    <img class="floating-sticker sticker-coffee"     src="assets/stickers/coffee.png"     alt="" />
+    <img class="floating-sticker sticker-hibiscus"   src="assets/stickers/hibiscus.png"   alt="" />
+    <img class="floating-sticker sticker-calico-cat" src="assets/stickers/calico-cat.png" alt="" />
+  </div>
+
+  <!-- The heading at the top of the page -->
+  <header class="app-header">
+    <p class="eyebrow">✦ a little magic drawing room ✦</p>
+    <h1>Air <em>Canvas</em></h1>
+    <p class="tagline">Draw in the air with just your fingertip.</p>
+  </header>
+
+  <main>
+    <!-- The "stage" is the big rounded card holding two layers stacked on top of each other:
+         1. the <video> showing your webcam
+         2. the <canvas> where we draw the hand points
+         WHY two layers: the video is just a picture we show; the canvas is
+         a transparent sheet on top that we can draw anything on. -->
+    <div class="stage" id="stage">
+      <!-- autoplay = start playing straight away
+           playsinline = don't go fullscreen on phones
+           muted = no sound needed (and browsers allow muted autoplay) -->
+      <video id="webcamVideo" autoplay playsinline muted></video>
+      <canvas id="landmarkCanvas"></canvas>
+
+      <!-- The friendly "waiting" screen shown inside the card before the camera starts.
+           script.js hides it (by adding a class to the stage) once the camera is on. -->
+      <div class="stage-placeholder">
+        <img class="placeholder-sticker" src="assets/stickers/star-cat.png" alt="A little black cat sitting on a yellow star" />
+        <p class="placeholder-text">Your canvas is waiting for you</p>
+
+        <!-- The button that turns the webcam on.
+             WHY a button: browsers only allow camera access after the user does
+             something on purpose (like a click), for privacy. -->
+        <button id="startButton" class="start-button">✨ Start Camera</button>
+      </div>
+    </div>
+
+    <!-- A small "pill" of text that tells you what the app is doing
+         (e.g. "Loading hand tracker..."). Helpful when something is slow. -->
+    <p id="statusMessage" class="status-message">Click "Start Camera" to begin.</p>
+  </main>
+
+  <!-- Loads our JavaScript.
+       type="module" lets us use "import" to load MediaPipe from the internet (a CDN).
+       Modules also wait until the page HTML is ready before running. -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>

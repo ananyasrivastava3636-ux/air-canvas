@@ -1,0 +1,311 @@
+/*
+  style.css — HOW THE PAGE LOOKS
+  This file controls colours, fonts, sizes, spacing, layout and animations.
+  Every colour comes from the palette at the top, so you can
+  change the whole look of the site in one place.
+*/
+
+/* ---------------------------------------------------------------
+   COLOUR PALETTE (CSS variables)
+   NEW CONCEPT — CSS variables: a variable is a named value you can
+   reuse. We write it once here (e.g. --moss) and use it anywhere
+   with var(--moss). Change it here, and it changes everywhere.
+   ":root" means "the whole page", so every element can see these.
+---------------------------------------------------------------- */
+:root {
+  /* Your six palette colours */
+  --moss: #54601B;        /* dark green: main text */
+  --pear: #B1B26A;        /* soft green: borders, little details */
+  --rose-petal: #EFB8A9;  /* soft pink: background blobs */
+  --hibiscus: #DB4453;    /* bright pink-red: highlights */
+  --tangerine: #F67D26;   /* orange: the button */
+  --lemon: #FED16D;       /* yellow: warm glows */
+
+  /* NEW CONCEPT — color-mix(): mixes two colours together.
+     We mix palette colours with white to get very pale "tints".
+     They're still YOUR colours, just watered down like watercolour paint. */
+  --cream: color-mix(in srgb, var(--lemon) 14%, white);         /* page background */
+  --rose-mist: color-mix(in srgb, var(--rose-petal) 35%, white); /* soft card fill */
+  --glass: color-mix(in srgb, white 70%, transparent);           /* see-through white */
+
+  /* Shapes and shadows we reuse so everything feels part of one family */
+  --corner-radius: 32px;
+  --soft-shadow: 0 20px 50px -20px color-mix(in srgb, var(--hibiscus) 45%, transparent);
+}
+
+/* ---------------------------------------------------------------
+   PAGE BASICS
+   box-sizing: border-box makes widths include padding and borders,
+   which makes sizes much easier to predict.
+---------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+/* The whole page: background colour, font, and centred content */
+body {
+  margin: 0;
+  min-height: 100vh;               /* at least the full height of the screen */
+  background: var(--cream);
+  color: var(--moss);
+  font-family: "Nunito", sans-serif;
+  display: flex;
+  flex-direction: column;          /* stack header and main vertically */
+  align-items: center;             /* centre them horizontally */
+  overflow-x: hidden;              /* stops stickers near the edge causing a sideways scrollbar */
+}
+
+/* ---------------------------------------------------------------
+   DECORATION LAYER
+   position: fixed pins it to the screen, and z-index: 0 keeps it
+   BEHIND the real content (header and main get z-index: 1 below).
+   pointer-events: none means clicks pass straight through it.
+---------------------------------------------------------------- */
+.decorations {
+  position: fixed;
+  inset: 0;                        /* shorthand for top/right/bottom/left = 0 → fill the screen */
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Blurry blobs: big circles blurred so much they look like soft watercolour light */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+}
+
+.blob-pink  { width: 420px; height: 420px; background: var(--rose-petal); top: -120px; left: -100px; }
+.blob-lemon { width: 380px; height: 380px; background: var(--lemon);      bottom: -140px; right: -80px; }
+.blob-pear  { width: 300px; height: 300px; background: var(--pear);       top: 40%; right: 10%; opacity: 0.25; }
+
+/* ---------------------------------------------------------------
+   FLOATING STICKERS
+   Each sticker is placed in a different corner and gently bobs
+   up and down using the "float" animation defined further down.
+   drop-shadow (not box-shadow) follows the sticker's real shape,
+   because the backgrounds are transparent.
+---------------------------------------------------------------- */
+.floating-sticker {
+  position: absolute;
+  width: 110px;
+  filter: drop-shadow(0 10px 14px color-mix(in srgb, var(--moss) 18%, transparent));
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Each sticker: position, size, a little tilt (--tilt), and a different
+   animation-delay so they don't all bob in sync (that would look robotic). */
+.sticker-flower-cat { top: 6%;  left: 5%;   width: 120px; --tilt: -8deg; }
+.sticker-goldfish   { top: 9%;  right: 6%;  width: 140px; --tilt: 6deg;  animation-delay: -1.5s; }
+.sticker-pansy      { top: 46%; left: 3%;   width: 100px; --tilt: 10deg; animation-delay: -3s; }
+.sticker-coffee     { bottom: 7%; left: 8%; width: 105px; --tilt: -4deg; animation-delay: -4.5s; }
+.sticker-hibiscus   { top: 48%; right: 4%;  width: 95px;  --tilt: -12deg; animation-delay: -2s; }
+.sticker-calico-cat { bottom: 6%; right: 9%; width: 120px; --tilt: 5deg; animation-delay: -5s; }
+
+/* NEW CONCEPT — @keyframes: describes an animation step by step.
+   0% is the start, 50% the middle, 100% the end. The browser smoothly
+   fills in everything in between. Here: drift up 14px, then back down. */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50%      { transform: translateY(-14px) rotate(calc(var(--tilt, 0deg) + 3deg)); }
+}
+
+/* On narrow screens there's no room at the sides, so hide the middle stickers
+   and shrink the rest. @media rules only apply when the condition is true. */
+@media (max-width: 900px) {
+  .sticker-pansy,
+  .sticker-hibiscus { display: none; }
+  .floating-sticker { width: 70px; opacity: 0.85; }
+}
+
+/* ---------------------------------------------------------------
+   HEADER
+   position: relative + z-index: 1 lifts it above the decoration layer.
+---------------------------------------------------------------- */
+.app-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 44px 16px 20px;
+}
+
+/* The tiny line above the title */
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;          /* spread the letters out: looks elegant and minimal */
+  text-transform: uppercase;
+  color: var(--hibiscus);
+}
+
+/* The big title */
+.app-header h1 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(2.6rem, 6vw, 4rem); /* NEW CONCEPT — clamp(min, ideal, max): grows with the screen but stays between the min and max */
+  font-weight: 600;
+  line-height: 1;
+  color: var(--moss);
+}
+
+/* "Canvas" in italics with a colour gradient, for a playful handwritten feel.
+   background-clip: text paints the gradient only inside the letters. */
+.app-header h1 em {
+  font-style: italic;
+  font-weight: 500;
+  background: linear-gradient(90deg, var(--hibiscus), var(--tangerine));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tagline {
+  margin: 12px 0 0;
+  font-size: 1.05rem;
+  opacity: 0.8;                    /* slightly faded so the title stands out more */
+}
+
+/* ---------------------------------------------------------------
+   MAIN AREA
+---------------------------------------------------------------- */
+main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;                       /* space between each item */
+  padding: 8px 16px 48px;
+}
+
+/* ---------------------------------------------------------------
+   THE STAGE (video + canvas stacked, inside a soft rounded card)
+   position: relative on the parent + position: absolute on the
+   children lets us place the canvas EXACTLY on top of the video.
+---------------------------------------------------------------- */
+.stage {
+  position: relative;
+  /* min() picks the SMALLEST of these: 86% of screen width, 760px, or a width
+     that keeps the card short enough to fit the screen height (4:3 shape) */
+  width: min(86vw, 760px, calc((100vh - 250px) * 4 / 3));
+  aspect-ratio: 4 / 3;             /* typical webcam shape, keeps it from stretching */
+  border-radius: var(--corner-radius);
+  overflow: hidden;                /* cuts off corners so the rounded edges show */
+  background: var(--rose-mist);
+  border: 8px solid white;         /* a white "photo frame" border: clean and minimal */
+  box-shadow: var(--soft-shadow);
+}
+
+/* Both layers fill the whole stage */
+.stage video,
+.stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;               /* fill the box without squashing the image */
+}
+
+/* Flip the video left-to-right so it behaves like a mirror.
+   WHY: without this, moving your hand right makes it move left on screen,
+   which feels very confusing. (We flip the hand points in script.js to match.) */
+.stage video {
+  transform: scaleX(-1);
+}
+
+/* ---------------------------------------------------------------
+   PLACEHOLDER (the "waiting" screen inside the card)
+   It sits on top of the video and canvas until the camera starts.
+---------------------------------------------------------------- */
+.stage-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;         /* centre everything vertically too */
+  gap: 14px;
+  /* a soft glow of lemon in the middle fading into pink at the edges */
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--lemon) 35%, white), var(--rose-mist) 70%);
+  transition: opacity 0.6s ease;
+}
+
+.placeholder-sticker {
+  width: 130px;
+  filter: drop-shadow(0 12px 16px color-mix(in srgb, var(--moss) 20%, transparent));
+  animation: float 5s ease-in-out infinite;
+}
+
+.placeholder-text {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-size: 1.3rem;
+}
+
+/* When script.js adds the class "camera-on" to the stage, fade the placeholder out.
+   pointer-events: none so it can't block anything once it's invisible. */
+.stage.camera-on .stage-placeholder {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------
+   START BUTTON
+   A rounded "pill" with a warm gradient. ":hover" styles apply when
+   the mouse is over it; ":disabled" when we switch it off in JavaScript.
+---------------------------------------------------------------- */
+.start-button {
+  background: linear-gradient(135deg, var(--tangerine), var(--hibiscus));
+  color: white;
+  border: none;
+  border-radius: 999px;            /* a huge radius turns any box into a pill shape */
+  padding: 14px 32px;
+  font-family: inherit;            /* use the page font, not the default button font */
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -8px var(--hibiscus);
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* smooth, not instant */
+}
+
+.start-button:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 14px 28px -8px var(--hibiscus);
+}
+
+.start-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+/* ---------------------------------------------------------------
+   STATUS MESSAGE (a frosted-glass "pill" under the card)
+   backdrop-filter: blur() blurs whatever is BEHIND the element,
+   giving the modern frosted-glass look.
+---------------------------------------------------------------- */
+.status-message {
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--pear) 40%, transparent);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------
+   ACCESSIBILITY: some people turn on "reduce motion" in their computer
+   settings because animations make them feel unwell. This respects that.
+---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .floating-sticker,
+  .placeholder-sticker { animation: none; }
+}
