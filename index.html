@@ -1,6 +1,7 @@
 <!--
   index.html — THE STRUCTURE OF THE PAGE
-  This file decides WHAT is on the page (title, button, stickers, video, canvas).
+  This file decides WHAT is on the page: the top bar, the camera card,
+  the side panel with gestures, and the stickers.
   It does not decide how things look (that's style.css)
   or how they behave (that's script.js).
 -->
@@ -17,75 +18,128 @@
   <title>Air Canvas ✨</title>
 
   <!-- Loads two Google Fonts:
-       - "Fraunces": a soft, curly serif for the big title (pretty + whimsical)
-       - "Nunito": a round, friendly font for everything else (clean + readable)
-       WHY two fonts: a fancy font for headings and a simple one for small text
-       is a classic design trick: it looks special without being hard to read. -->
+       - "Fraunces": a soft, elegant serif for headings (pretty + a little whimsical)
+       - "DM Sans": a clean, modern font for everything else (minimal + readable)
+       WHY two fonts: a special font for headings and a simple one for small text
+       is a classic design trick: it looks premium without being hard to read. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet" />
 
   <!-- Connects our stylesheet so the page uses our colours and layout -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- DECORATION LAYER: soft colour blobs + floating stickers behind everything.
-       aria-hidden="true" tells screen readers to skip this part,
-       because it's only decoration and has no information in it. -->
-  <div class="decorations" aria-hidden="true">
-    <!-- Big blurry colour blobs that give the background a dreamy, painted feel -->
-    <span class="blob blob-pink"></span>
-    <span class="blob blob-lemon"></span>
-    <span class="blob blob-pear"></span>
-
-    <!-- Your stickers, floating around the edges of the page.
-         alt="" (empty) because they're decoration. Each has its own class
-         so style.css can place it in a different spot. -->
-    <img class="floating-sticker sticker-flower-cat" src="assets/stickers/flower-cat.png" alt="" />
-    <img class="floating-sticker sticker-goldfish"   src="assets/stickers/goldfish.png"   alt="" />
-    <img class="floating-sticker sticker-pansy"      src="assets/stickers/pansy.png"      alt="" />
-    <img class="floating-sticker sticker-coffee"     src="assets/stickers/coffee.png"     alt="" />
-    <img class="floating-sticker sticker-hibiscus"   src="assets/stickers/hibiscus.png"   alt="" />
-    <img class="floating-sticker sticker-calico-cat" src="assets/stickers/calico-cat.png" alt="" />
-  </div>
-
-  <!-- The heading at the top of the page -->
-  <header class="app-header">
-    <p class="eyebrow">✦ a little magic drawing room ✦</p>
-    <h1>Air <em>Canvas</em></h1>
-    <p class="tagline">Draw in the air with just your fingertip.</p>
-  </header>
-
-  <main>
-    <!-- The "stage" is the big rounded card holding two layers stacked on top of each other:
-         1. the <video> showing your webcam
-         2. the <canvas> where we draw the hand points
-         WHY two layers: the video is just a picture we show; the canvas is
-         a transparent sheet on top that we can draw anything on. -->
-    <div class="stage" id="stage">
-      <!-- autoplay = start playing straight away
-           playsinline = don't go fullscreen on phones
-           muted = no sound needed (and browsers allow muted autoplay) -->
-      <video id="webcamVideo" autoplay playsinline muted></video>
-      <canvas id="landmarkCanvas"></canvas>
-
-      <!-- The friendly "waiting" screen shown inside the card before the camera starts.
-           script.js hides it (by adding a class to the stage) once the camera is on. -->
-      <div class="stage-placeholder">
-        <img class="placeholder-sticker" src="assets/stickers/star-cat.png" alt="A little black cat sitting on a yellow star" />
-        <p class="placeholder-text">Your canvas is waiting for you</p>
-
-        <!-- The button that turns the webcam on.
-             WHY a button: browsers only allow camera access after the user does
-             something on purpose (like a click), for privacy. -->
-        <button id="startButton" class="start-button">✨ Start Camera</button>
-      </div>
+  <!-- ===========================================================
+       TOP BAR: the app name on the left, a live status pill on the right
+       =========================================================== -->
+  <header class="top-bar">
+    <div class="brand">
+      <img class="brand-sticker" src="assets/stickers/pansy.png" alt="" />
+      <h1>Air <em>Canvas</em></h1>
     </div>
 
-    <!-- A small "pill" of text that tells you what the app is doing
-         (e.g. "Loading hand tracker..."). Helpful when something is slow. -->
-    <p id="statusMessage" class="status-message">Click "Start Camera" to begin.</p>
+    <!-- The status pill. The little dot changes colour (via a class in script.js)
+         to show whether the camera is off, loading, or live. -->
+    <p class="status-pill" id="statusPill">
+      <span class="status-dot"></span>
+      <span id="statusMessage">Camera off</span>
+    </p>
+  </header>
+
+  <!-- ===========================================================
+       MAIN AREA: two columns, the camera card (left) + side panel (right)
+       =========================================================== -->
+  <main class="layout">
+
+    <!-- THE STAGE: one card with FOUR layers stacked on top of each other:
+         1. <video>        your webcam
+         2. .video-wash    a soft cream tint so your drawing stands out
+         3. paintCanvas    where your DRAWING lives (it stays until you clear it)
+         4. overlayCanvas  the hand dots + fingertip cursor (redrawn every frame)
+         WHY separate canvases: the overlay is wiped 60 times a second, but we
+         never want to wipe your drawing. Two sheets = two different jobs. -->
+    <section class="stage-wrap">
+      <div class="stage" id="stage">
+        <!-- autoplay = start playing straight away
+             playsinline = don't go fullscreen on phones
+             muted = no sound needed (and browsers allow muted autoplay) -->
+        <video id="webcamVideo" autoplay playsinline muted></video>
+        <div class="video-wash"></div>
+        <canvas id="paintCanvas"></canvas>
+        <canvas id="overlayCanvas"></canvas>
+
+        <!-- The "waiting" screen shown inside the card before the camera starts.
+             script.js hides it (by adding a class to the stage) once the camera is on. -->
+        <div class="stage-placeholder">
+          <img class="placeholder-sticker" src="assets/stickers/star-cat.png" alt="A little black cat sitting on a yellow star" />
+          <h2>Your canvas is waiting</h2>
+          <p>Turn on your camera, raise one finger, and paint the air.</p>
+
+          <!-- WHY a button: browsers only allow camera access after the user does
+               something on purpose (like a click), for privacy. -->
+          <button id="startButton" class="primary-button">Start Camera</button>
+        </div>
+      </div>
+
+      <!-- Stickers "stuck" onto the corners of the card, like a scrapbook.
+           aria-hidden: screen readers skip them because they're decoration. -->
+      <img class="corner-sticker corner-bottom-left"  src="assets/stickers/flower-cat.png" alt="" aria-hidden="true" />
+      <img class="corner-sticker corner-top-right"    src="assets/stickers/goldfish.png"   alt="" aria-hidden="true" />
+      <img class="corner-sticker corner-bottom-right" src="assets/stickers/calico-cat.png" alt="" aria-hidden="true" />
+    </section>
+
+    <!-- SIDE PANEL: what mode you're in right now, the gesture guide, and tools -->
+    <aside class="panel">
+
+      <!-- "Right now" card: shows your current gesture in big friendly text -->
+      <div class="mode-card" id="modeCard" data-mode="off">
+        <span class="mode-label">Right now</span>
+        <p class="mode-text" id="modeText">Camera is off</p>
+      </div>
+
+      <!-- Gesture guide. Each row has a data-gesture name so script.js can
+           highlight the row that matches what your hand is doing. -->
+      <div class="panel-section">
+        <h3>Gestures</h3>
+        <ul class="gesture-list">
+          <li data-gesture="draw">
+            <span class="gesture-emoji">☝️</span>
+            <span><strong>Draw</strong><small>Index finger up</small></span>
+          </li>
+          <li data-gesture="hover">
+            <span class="gesture-emoji">✌️</span>
+            <span><strong>Hover</strong><small>Index + middle up</small></span>
+          </li>
+          <!-- These are coming in later stages, so they're shown faded with a "soon" tag -->
+          <li class="is-soon">
+            <span class="gesture-emoji">🤏</span>
+            <span><strong>Pick colour</strong><small>Pinch over a colour</small></span>
+            <em class="soon-tag">soon</em>
+          </li>
+          <li class="is-soon">
+            <span class="gesture-emoji">🖐️</span>
+            <span><strong>Clear</strong><small>Hold open palm</small></span>
+            <em class="soon-tag">soon</em>
+          </li>
+          <li class="is-soon">
+            <span class="gesture-emoji">👍</span>
+            <span><strong>Save</strong><small>Thumbs up</small></span>
+            <em class="soon-tag">soon</em>
+          </li>
+        </ul>
+      </div>
+
+      <!-- A normal button to clear the drawing (the gesture version comes in Stage 3) -->
+      <button id="clearButton" class="ghost-button">Clear drawing</button>
+
+      <!-- A small helpful tip at the bottom of the panel -->
+      <p class="panel-tip">
+        <img src="assets/stickers/coffee.png" alt="" />
+        Tilt your screen so the camera can see your hand, and stand in good light.
+      </p>
+    </aside>
   </main>
 
   <!-- Loads our JavaScript.
