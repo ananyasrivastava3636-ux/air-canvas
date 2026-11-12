@@ -70,24 +70,10 @@ I'm building this in stages to learn as I go. Next up:
 ## Credits 💛
 
 **Background painting**
-- Water-lily painting in the style of Claude Monet, AI-generated: [Source / tool used] – [Link]
-
-**Stickers**
-| Sticker | Artist | Link |
-|---|---|---|
-| Flower cat | [Artist name] | [Link] |
-| Calico cat in a flower | [Artist name] | [Link] |
-| Coffee cup | [Artist name] | [Link] |
-| Hibiscus | [Artist name] | [Link] |
-| Pansy | [Artist name] | [Link] |
-| Goldfish with stars | [Artist name] | [Link] |
-| Black cat on a star | [Artist name] | [Link] |
-
-**Colour palette**
-- "Garden Party" palette: [Creator name] – [Link]
+- Water-lily painting in the style of Claude Monet, AI-generated
 
 All artwork belongs to its original creators and is used here with credit in a personal, non-commercial learning project. If you're one of the artists and would like your work removed, please contact me and I'll take it down.
 
 ---
 
-Made with ✨ by [Your name] · [LinkedIn link]
+Made by me
